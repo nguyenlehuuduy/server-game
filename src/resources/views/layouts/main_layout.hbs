@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Server game Unity</title>
+    <link rel="shortcut icon" type="image/png" href="assets/images/logos/favicon.png" />
+    <link rel="stylesheet" href="assets/css/styles.min.css" />
+    {{!-- js for this page --}}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    {{!-- sweet alert --}}
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.2.0/lazysizes.min.js" async=""></script>
+<!-- jsDeliver -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.plugins.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.2.0/lazysizes.min.js" async=""></script>
+</head>
+
+<body>
+    <!--  Body Wrapper -->
+    <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+        data-sidebar-position="fixed" data-header-position="fixed">
+
+        <!-- Sidebar Start -->
+        {{>adm_slide_bar}}
+        <!--  Sidebar End -->
+
+        <!--  Main wrapper -->
+        <div class="body-wrapper">
+
+            <!--  Header Start -->
+            {{>adm_header}}
+            <!--  Header End -->
+
+            <div class="container-fluid">
+                <!--  Row 1 -->
+                {{{body}}}
+                <!-- footer start -->
+                {{>adm_footer}}
+                <!-- footer end -->
+            </div>
+        </div>
+
+    </div>
+    <script src="assets/libs/jquery/dist/jquery.min.js"></script>
+    <script src="assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/sidebarmenu.js"></script>
+    <script src="assets/js/app.min.js"></script>
+    <script src="assets/libs/apexcharts/dist/apexcharts.min.js"></script>
+    <script src="assets/libs/simplebar/dist/simplebar.js"></script>
+    <script src="assets/js/dashboard.js"></script>
+    <script src="assets/js/question/.js"></script>
+    <script src="assets/js/question/question.js"></script>
+    <script src="assets/js/round/round.js"></script>
+    <script src="assets/js/topic/topic.js"></script>
+    <script src="assets/js/user/user.js"></script>
+    <script src="assets/js/image/image.js"></script>
+
+
+
+
+    
+    {{!-- {{{_sections.script}}} --}}
+</body>
+</html>

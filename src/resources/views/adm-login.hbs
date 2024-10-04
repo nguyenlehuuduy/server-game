@@ -1,0 +1,114 @@
+{{!-- js for this page --}}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+{{!-- sweet alert --}}
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function () {
+        $(".btn-sign-in").click(function () {
+            let admUsername = $("#adm-username").val();
+            let admPassword = $("#adm-password").val();
+            let formData = new FormData();
+
+            if (validation(admUsername, admPassword) != false) {
+                //selebrate data
+                formData = {
+                    admUsername: admUsername,
+                    admPassword: admPassword
+                }
+                //send request to server
+                $.ajax({
+                    url: '/admin/authen',
+                    type: 'POST',
+                    data: formData,
+                    dataType: "json",
+                    encode: true,
+                }).done(function (data) {
+                    if (data.status == "ok") {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Đăng nhập thành công !',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        setTimeout(function () {
+                            window.location.replace("/admin");
+                        }, 2000)
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Account is not valid!'
+                        })
+                        $("#adm-password").val(" ")
+                    }
+                })
+            }
+        })
+        //func use to validate
+        function validation(username, password) {
+            if (username == "") {
+                $(".err-username").html('Username is not valid !')
+                return false;
+            } else {
+                $(".err-username").html(' ')
+            }
+            if (password == "") {
+                $(".err-password").html('Password is not valid');
+                return false;
+            } else {
+                $(".err-password").html(' ')
+            }
+            //check more condition
+            //...
+        }
+    })
+</script>
+<div
+    class="position-relative overflow-hidden radial-gradient min-vh-100 d-flex align-items-center justify-content-center">
+    <div class="d-flex align-items-center justify-content-center w-100">
+        <div class="row justify-content-center w-100">
+            <div class="col-md-8 col-lg-6 col-xxl-3">
+                <div class="card mb-0">
+                    <div class="card-body">
+                        <a href="./index.html" class="text-nowrap logo-img text-center d-block py-3 w-100">
+                            <img src="../assets/images/logos/logo_NLP.png" width="180" alt="">
+                        </a>
+                        <p class="text-center">Đăng nhập bởi quản trị viên</p>
+                        {{!-- form login --}}
+                        <form>
+                            <div class="mb-3">
+                                <label for="exampleInputEmail1" class="form-label">Tên đăng nhập</label>
+                                <input type="email" class="form-control" id="adm-username" aria-describedby="emailHelp">
+                                <p style="color: red;" class="err-username"></p>
+                            </div>
+                            <div class="mb-4">
+                                <label for="exampleInputPassword1" class="form-label">Mật khẩu</label>
+                                <input type="password" class="form-control" id="adm-password">
+                                <p style="color: red;" class="err-password"></p>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input primary" type="checkbox" value=""
+                                        id="flexCheckChecked" checked>
+                                    <label class="form-check-label text-dark" for="flexCheckChecked">
+                                        Ghi nhớ trên thiệt bị này
+                                    </label>
+                                </div>
+                                <a class="text-primary fw-bold" href="./index.html">Quên mật khẩu ?</a>
+                            </div>
+
+                            <a href="javascript:value(0)"
+                                class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2 btn-sign-in ">Đăng nhập</a>
+
+                            <div class="d-flex align-items-center justify-content-center">
+                                <a class="text-primary fw-bold ms-2" href="./authentication-register.html">Tạo một tài khoản mới</a>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

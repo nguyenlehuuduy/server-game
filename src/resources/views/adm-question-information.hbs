@@ -1,0 +1,256 @@
+
+<div id="DEFINENAMEPAGE" layout="HOMEPAGE">
+</div>
+
+{{!-- pop up --}}
+<div class="pre-loading">
+    <div class="lds-roller">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+<div class="lo-update-type-question" style="position: absolute;  position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);width: 50%; height: 100%; z-index: 999999; display: none;">
+
+    <div class="card mb-0">
+        <div class="card-body">
+            <h5 class="card-title fw-semibold mb-4">Cập nhật loại câu hỏi</h5>
+
+            <form>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="formp-label">Tên thể loại<a style="color: red">*</a></label>
+                    <input type="text" class="form-control ud-name-type" id="" aria-describedby="">
+                    <div id="emailHelp" class="form-text">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Vai trò của câu trả lời<a
+                            style="color: red">*</a></label>
+                    <textarea type="text" class="form-control up-role-answer" id="" aria-describedby=""></textarea>
+                    <div id="emailHelp" class="form-text">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label ">Mô tả về câu trả lời<a
+                            style="color: red">*</a></label>
+                    <textarea type="text" class="form-control up-descript-answer" id="" aria-describedby=""></textarea>
+                    <div id="emailHelp" class="form-text">
+                    </div>
+                    <label for="exampleInputEmail1" class="form-label alert-err" style="color: red"></label>
+                </div>
+                <button type="button" class="btn btn-primary btn-update-type-question">Cập nhật</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="lo-update-question"
+    style="position: absolute;  position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);width: 70%; overflow-y: scroll; height: 100%; z-index: 999999; display: none;">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title fw-semibold mb-4">Cập nhật thông tin câu hỏi</h5>
+            <form>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Nội dung của câu hỏi<a
+                            style="color: red">*</a></label>
+                    <input type="text" class="form-control ud-content-question" id="" aria-describedby="">
+                    <div id="emailHelp" class="form-text">
+
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">Câu trả lời<a style="color: red">*</a></label>
+                    <a>Ví dụ:Loại câu hỏi của trắc nghiệm : </br>Chọn câu trả lời : 6,7,*8,9 </br> Câu trả lời đúng: 8
+                    </a>
+
+                    <textarea class="form-control ud-awswer" id="exampleInputPassword1"
+                        style="height: 100px;"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="disabledSelect" class="form-label">Loại của câu hỏi này<a
+                            style="color: red">*</a></label>
+                    <select id="sl-ud-type-question" class="form-select sl-ud-type-question">
+
+
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Đường dẫn hình ảnh</label>
+                    <input type="text" class="form-control ud-src-image" id="" aria-describedby="">
+                    <div id="emailHelp" class="form-text">
+
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="disabledSelect" class="form-label">Vòng chơi</label>
+                    <select id="ud-round" name="ud-round" class="form-select ud-round">
+
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="disabledSelect" class="form-label">Chủ đề</label>
+                    <select id="ud-topic" class="form-select ud-topic">
+                     
+                    </select>
+                </div>
+                <p style="color: red;" class="alert-error-update-question"></p>
+
+                <button type="button" class="btn btn-primary btn-update-question">Cập nhật</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+
+
+{{!-- main html body --}}
+<div class="row">
+    <div class="col-lg-4 d-flex align-items-stretch">
+        <div class="card w-100">
+            <div class="card-body p-4">
+                <div class="mb-4">
+                    <h5 class="card-title fw-semibold">Loại câu hỏi</h5>
+                </div>
+                <ul class="timeline-widget mb-0 position-relative mb-n5 l-all-type-question">
+
+                </ul>
+            </div>
+        </div>
+    </div>
+    {{!-- table of all question --}}
+    <div class="col-lg-8 d-flex align-items-stretch">
+        <div class="card w-100">
+            <div class="card-body p-4">
+                <h5 class="card-title fw-semibold mb-4">Thông tin Câu hỏi</h5>
+                <div class="table-responsive">
+                    <table class="table text-nowrap mb-0 align-middle">
+                        <thead class="text-dark fs-4">
+                            <tr>
+
+                                <th class="border-bottom-0">
+                                    <h6 class="fw-semibold mb-0">Nội dung/Chủ đề</h6>
+                                </th>
+                                <th class="border-bottom-0">
+                                    <h6 class="fw-semibold mb-0">Loại/Vòng</h6>
+                                </th>
+                                <th class="border-bottom-0">
+                                    <h6 class="fw-semibold mb-0">Các lựa chọn</h6>
+                                </th>
+                                <th class="border-bottom-0">
+                                    <h6 class="fw-semibold mb-0">Câu trả lời</h6>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="body-question">
+                            {{!-- body of question --}}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{!-- form to add question --}}
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title fw-semibold mb-4">Thêm thông tin câu hỏi</h5>
+                <div class="card">
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-3">
+                                <label for="exampleInputEmail1" class="form-label">Nội dung của câu hỏi<a
+                                        style="color: red">*</a></label>
+                                <input type="text" class="form-control content-question" id="" aria-describedby="">
+                                <div id="emailHelp" class="form-text">
+
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="exampleInputPassword1" class="form-label">Câu trả lời<a
+                                        style="color: red">*</a></label>
+                                <a>Ví dụ:Loại câu hỏi của trắc nghiệm : </br>Chọn câu trả lời : 6,7,*8,9 </br> Câu trả
+                                    lời đúng: 8 </a>
+
+                                <textarea class="form-control awswer" id="exampleInputPassword1"
+                                    style="height: 100px;"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="disabledSelect" class="form-label">Loại của câu hỏi này<a
+                                        style="color: red">*</a></label>
+                                <select id="disabledSelect" class="form-select sl-type-question">
+
+
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="exampleInputEmail1" class="form-label">Đường dẫn hình ảnh</label>
+                                <input type="text" class="form-control src-image" id="" aria-describedby="">
+                                <div id="emailHelp" class="form-text">
+
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="disabledSelect" class="form-label">Vòng chơi</label>
+                                <select id="disabledSelect" class="form-select round-questions">
+
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="disabledSelect" class="form-label">Chủ đề</label>
+                                <select id="disabledSelect" class="form-select topic-questions">
+                                 
+                                </select>
+                            </div>
+
+                            <button type="button" class="btn btn-primary btn-add-question">Submit</button>
+                        </form>
+                    </div>
+                </div>
+                <h5 class="card-title fw-semibold mb-4">Loại của câu hỏi</h5>
+                <div class="card mb-0">
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-3">
+                                <label for="exampleInputEmail1" class="formp-label">Tên thể loại<a
+                                        style="color: red">*</a></label>
+                                <input type="text" class="form-control name-type" id="" aria-describedby="">
+                                <div id="emailHelp" class="form-text">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="exampleInputEmail1" class="form-label">Vai trò của câu trả lời<a
+                                        style="color: red">*</a></label>
+                                <textarea type="text" class="form-control role-answer" id=""
+                                    aria-describedby=""></textarea>
+                                <div id="emailHelp" class="form-text">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="exampleInputEmail1" class="form-label ">Mô tả câu trả lời<a
+                                        style="color: red">*</a></label>
+                                <textarea type="text" class="form-control descript-answer" id=""
+                                    aria-describedby=""></textarea>
+                                <div id="emailHelp" class="form-text">
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-primary btn-add-type-question">Thêm</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

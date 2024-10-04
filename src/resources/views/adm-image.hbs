@@ -1,0 +1,305 @@
+<div id="DEFINENAMEPAGE" layout="IMAGEPAGE">
+</div>
+
+
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-md-5 grid-margin stretch-card">
+            <form action="bulk-upload-design" enctype="multipart/form-data" id="form-upload-image" method="POST"
+                style="width: 100%;">
+
+                <div class="card">
+                    <div class="top">
+                        <p>Chọn một & nhiều ảnh muốn tải lên</p>
+                        <button type="button" class="btn-bulk-upload-design">Đăng lên</button>
+                    </div>
+                    <div class="drag-area">
+                        <span class="visible">
+                            Chọn một & nhiều ảnh muốn tải lên
+                            <span class="select" role="button">Ảnh từ máy...</span>
+                        </span>
+                        <span class="on-drop">Thả tại đây</span>
+                        <input name="file" type="file" class="file all-file-upload" multiple />
+                    </div>
+
+                    <!-- IMAGE PREVIEW CONTAINER -->
+                    <div class="container"></div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-7 grid-margin stretch-card">
+            <div class="col-md-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Google Drive là nơi để lưu trữ hình ảnh</h4>
+                        <div class="media">
+                            <i class="ti-world icon-md text-info d-flex align-self-start me-3"></i>
+                            <div class="media-body">
+                                <p class="card-text">Ảnh sẽ phải được nén giảm kích thức dưới 5mb trước khi được lưu vào
+                                    drive, lưu dưới dạng webp để cải thiện hiệu năng website.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+
+        </div>
+        <div class="col-md-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Thông tin về Google Drive</h4>
+                    <p class="card-description">
+                        estigamenlp@gmail.com <code>&lt;Email&gt;</code> !
+                    </p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <address>
+                                <p class="fw-bold">Sử dụng google Drive API.</p>
+                                <p>
+                                    Thư viện của Google chỉ cho phép miễn phí 15GB !
+                                </p>
+                                <p>
+                                    ---
+                                </p>
+                                <p>
+                                    Mua gói update đến khi cần thiết !
+                                </p>
+                            </address>
+                        </div>
+                        <div class="col-md-6">
+                            <address class="text-primary">
+                                <p class="fw-bold">
+                                    Thông tin về E-mail
+                                </p>
+                                <p class="mb-2">
+                                    Chỉ có người cầm Admin mới biết thông tin cụ thể !
+                                </p>
+                                <p class="fw-bold">
+                                    Liên lạc hỗ trợ
+                                </p>
+                                <p>
+                                    0868616703
+                                </p>
+                            </address>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h4 class="card-title">Các quyền được phép khi sử dụng google API</h4>
+                    <p class="card-description">
+                        Bảo mật <code>Token</code> để tránh bị mất thông tin !
+                    </p>
+                    <p class="lead">
+                        Thêm || Sửa || Xoá
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Một số lưu ý khi sử dụng tool !!!</h4>
+                    <ul>
+                        <li>Khi upload nhiều ảnh có thể xảy ra trường hợp tắc nghẽn băng thông, cho nên chưa ảnh có thể
+                            load lên chậm.</li>
+                        <li>Khuyến cáo nén ảnh dưới 5MB để cải thiện hiệu năng của website.</li>
+                        <li>Định dạng khi đăng lên sẽ luôn luôn là định dạng .webp.</li>
+                        <li>Không nên truy cập trực tiếp vào Google Drive để đăng tải trực tiếp.</li>
+                        <li>Thông qua tool này thì hiệu suất website sẽ được cải thiện hơn.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <img src="" alt="" id="show-img-upload" style="width: 150px; height: auto;">
+    <div class="row">
+        <p>Kho lưu trữ hình ảnh </p>
+        <p>Tất cả hình ảnh được lưu tại google drive đã được cấp</p>
+
+        <div class="col-md-12 grid-margin stretch-card">
+
+            <div class="gallery" id="gallery">
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<style>
+    /* MAIN STYLE */
+
+    .card {
+        width: 100%;
+        height: auto;
+        padding: 15px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+        border-radius: 5px;
+        overflow: hidden;
+        background: #fafbff;
+    }
+
+    .card .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+
+    .card p {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #878a9a;
+    }
+
+    .card button {
+        outline: 0;
+        border: 0;
+        -webkit-appearence: none;
+        background: #5256ad;
+        color: #fff;
+        border-radius: 4px;
+        transition: 0.3s;
+        cursor: pointer;
+        font-weight: 400;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+        font-size: 0.8rem;
+        padding: 8px 13px;
+    }
+
+    .card button:hover {
+        opacity: 0.8;
+    }
+
+    .card button:active {
+        transform: translateY(5px);
+    }
+
+    .card .drag-area {
+        width: 100%;
+        height: 160px;
+        border-radius: 5px;
+        border: 2px dashed #d5d5e1;
+        color: #c8c9dd;
+        font-size: 0.9rem;
+        font-weight: 500;
+        position: relative;
+        background: #dfe3f259;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        user-select: none;
+        -webkit-user-select: none;
+        margin-top: 10px;
+    }
+
+    .card .drag-area .visible {
+        font-size: 18px;
+    }
+
+    .card .select {
+        color: #5256ad;
+        margin-left: 5px;
+        cursor: pointer;
+        transition: 0.4s;
+    }
+
+    .card .select:hover {
+        opacity: 0.6;
+    }
+
+    .card .container {
+        width: 100%;
+        height: auto;
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        max-height: 200px;
+        overflow-y: auto;
+        margin-top: 10px;
+    }
+
+    .card .container .image {
+        width: calc(26% - 19px);
+        margin-right: 15px;
+        height: 75px;
+        position: relative;
+        margin-bottom: 8px;
+    }
+
+    .card .container .image img {
+        width: 100%;
+        height: 100%;
+        border-radius: 5px;
+    }
+
+    .card .container .image span {
+        position: absolute;
+        top: -2px;
+        right: 9px;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    /* dragover class will used in drag and drop system */
+    .card .drag-area.dragover {
+        background: rgba(0, 0, 0, 0.4);
+    }
+
+    .card .drag-area.dragover .on-drop {
+        display: inline;
+        font-size: 28px;
+    }
+
+    .card input,
+    .card .drag-area .on-drop,
+    .card .drag-area.dragover .visible {
+        display: none;
+    }
+
+    #gallery {
+        width: 100%;
+        height: auto;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        align-items: center;
+    }
+
+    .gallery-item {
+        width: 19.9%;
+    }
+
+    .gallery-item>div {
+        width: 100%;
+        height: 300px;
+        position: relative;
+        margin-left: 2px;
+        overflow: hidden;
+    }
+
+
+    .gallery-item>div>img {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        object-fit: cover;
+        padding-bottom: 5%;
+    }
+
+    .inf-image {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: -100%;
+        background-color: rgb(227, 230, 233, 0.6);
+    }
+</style>

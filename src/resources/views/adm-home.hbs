@@ -1,0 +1,927 @@
+{{!-- js for this page --}}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+{{!-- sweet alert --}}
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.2.0/lazysizes.min.js" async=""></script>
+
+<script>
+    $(document).ready(function () {
+        //fucntion get all question and delete/update question
+        getAllQuestion()
+        function getAllQuestion() {
+            $(".pre-loading").show()
+            $.ajax({
+                url: 'get-all-question',
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+            }).done(function (data) {
+                let html = ""
+                data.reverse().map((question) => {
+                    html += `   <tr>
+                                <td class="border-bottom-0">
+                                    <h6 class="fw-semibold mb-1">`+ question.content.decription + `</h6>
+                                    <span class="fw-normal">`;
+                    if (question.idTopic) {
+                        html += question.idTopic.nameTopic
+                    } else {
+                        html += 'null'
+                    }
+                    html += `
+                    <br/>
+                    <a href="javascript:value(0)" data-id="`+ question._id + `" class="delete-question" style="color: red">Xóa </a>
+                    <a href="javascript:value(0)" data-id="`+ question._id + `" class="edit-question">Sửa</a>
+                    </span>
+                                </td>
+                                <td class="border-bottom-0">
+                                    <p class="mb-0 fw-normal">`;
+                    if (question.idType) {
+                        html += question.idType.nameType
+                    } else {
+                        html += 'null'
+                    }
+
+                    html += `</p>
+                                </td>
+                                <td class="border-bottom-0">
+                                    <div class="d-flex align-items-center gap-2">
+                                       `;
+
+                    (question.option).map((choice) => {
+                        html += ` <span class="badge bg-primary rounded-3 fw-semibold">` + choice + `</span>`
+                    })
+                    html += `
+                                    </div>
+                                </td>
+                                <td class="border-bottom-0">
+                                    <h6 class="fw-semibold mb-0 fs-4"> 
+                                        <span class="badge bg-danger rounded-3 fw-semibold">` + question.answer + `</span> 
+                                    </h6>
+                                </td>
+                            </tr>
+`
+                })
+                $(".body-question").html(html)
+            }).then((rs) => {
+                $(".pre-loading").hide();
+            }).then((rs) => {
+                $(".delete-question").click(function () {
+                    let dataId = $(this).attr('data-id');
+                    Swal.fire({
+                        title: 'Bạn có muốn xóa câu hỏi này không?',
+                        showDenyButton: true,
+                        showCancelButton: true,
+                        confirmButtonText: 'Xóa',
+                        denyButtonText: `Không xóa`,
+                        cancelButtonText: 'Hủy',
+                    }).then((result) => {
+                        /* Read more about isConfirmed, isDenied below */
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: 'delete-question/' + dataId + '',
+                                type: 'DELETE',
+                                dataType: "json",
+                                encode: true,
+                            }).done(function (data) {
+                                if (data == "success") {
+                                    Swal.fire('Xóa!', '', 'success')
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Ôi không...',
+                                        text: 'Có gì đó không đúng ở server!',
+                                        footer: '<a href="">Tại sao tôi lại gặp vấn đề này?</a>'
+                                    })
+                                }
+                            })
+                        } else if (result.isDenied) {
+                            Swal.fire('Thay đổi không được lưu', '', 'info')
+                        }
+                    }).then((rs) => {
+                        getAllQuestion();
+                    })
+                })
+            }).then((rs) => {
+                $(".edit-question").click(function () {
+                    let dataId = false;
+                    $(".pre-loading").show();
+                    $(".lo-update-question").slideDown()
+                    $(".alert-error-update-question").html("")
+                    dataId = $(this).attr('data-id')
+
+                    $.ajax({
+                        url: 'get-question/' + dataId + '',
+                        type: 'GET',
+                        dataType: "json",
+                        encode: true,
+                    }).done(function (data) {
+                        console.log(data)
+                        //handle 
+
+                        //NOTE
+                        //id topic chưa có làm
+                        // $(".sl-up-topic").val(data.idTopic)
+                        //id round chưa có làm
+                        //$(".sl-ud-round").val(data.idRound)
+                        let str_option_answer = "";
+                        (data.obj.option).map((ans, index) => {
+                            if (index != data.obj.option.length - 1) {
+                                (data.obj.answer).map((item) => {
+                                    if (item == ans) {
+                                        str_option_answer += ('*' + ans + ',')
+                                    } else {
+                                        str_option_answer += (ans + ',')
+                                    }
+                                })
+                            } else {
+                                (data.obj.answer).map((item) => {
+                                    if (item == ans) {
+                                        str_option_answer += ('*' + ans)
+                                    } else {
+                                        str_option_answer += ans
+                                    }
+                                })
+                            }
+                        })
+                        $(".sl-ud-type-question").val(data.obj.idType._id)
+                        $(".ud-awswer").val(str_option_answer)
+
+                        //EASY
+                        $(".ud-src-image").val(data.obj.content.imagePath)
+                        $(".ud-content-question").val(data.obj.content.decription)
+                    })
+
+                    $(".btn-update-question").click(function () {
+                        //no need validation
+                        let udImageSource = $(".ud-src-image").val()
+                        let udIdRound = $(".sl-ud-round").val()
+                        let upIdTopic = $(".sl-up-topic").val()
+
+                        //validation
+                        let udContentQuestion = $(".ud-content-question").val()
+                        let udAnswer = $(".ud-awswer").val()
+                        let udTypeQuestion = $(".sl-ud-type-question").val()
+                        let rs_validate = defineRoleQuestion(udAnswer, udTypeQuestion)
+                        let ud_l_answer = rs_validate.trueAnwer
+                        let ud_l_option = rs_validate.listOption
+                        if (udContentQuestion == "" || udAnswer == "" || udTypeQuestion == "") {
+                            $(".alert-error-update-question").html('something is null !')
+                        }
+                        else if (rs_validate == "undefindTypeQuestion") {
+                            $(".alert-error-update-question").html('Undefined role of type Question !')
+                        }
+                        else if (rs_validate == "underfindAnwser") {
+                            $(".alert-error-update-question").html('Undefined answer !')
+                        }
+                        else {
+                            $(".alert-error-update-question").html("")
+                            let formData = new FormData();
+                            formData = {
+                                _id: dataId,
+                                obj: {
+                                    'content.decription': udContentQuestion,
+                                    'content.imagePath': udImageSource,
+                                    answer: ud_l_answer,
+                                    option: ud_l_option,
+                                    idType: udTypeQuestion,
+                                    //NOTE BUG
+                                    //idTopic: upIdTopic,
+                                    //idRound: udIdRound
+                                }
+                            }
+                            $(".lo-update-question").slideUp();
+                            //request update
+                            $.ajax({
+                                url: 'update-question',
+                                type: 'PUT',
+                                dataType: "json",
+                                data: formData,
+                                encode: true,
+                            }).done(function (data) {
+                                console.log(data)
+                                if (data.data == 'success') {
+                                    $(".pre-loading").hide();
+                                    window.location.reload()
+                                }
+                            })
+                        }
+                    })
+
+                })
+            });
+        }
+
+        //fucntion get all type question and delete/update type question
+        getAllTypeQuestion()
+        function getAllTypeQuestion() {
+            $(".pre-loading").show()
+            $.ajax({
+                url: 'all-type-questions',
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+            }).done(function (data) {
+                console.log(data)
+                let html = '';
+                let html_sl_type = '';
+                data.reverse().map((type) => {
+                    html_sl_type += `<option value = ` + type._id + `>` + type.nameType + `</option>`
+                    html += `   <li class="timeline-item d-flex position-relative overflow-hidden">
+                        <div class="timeline-time text-dark flex-shrink-0 text-end " style= " overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    white-space: nowrap;
+                                    width: 120px; ">`+ type.nameType + ` 
+                                    </br>
+                                    <a href="javascript:value(0)" class="delete-type-question" data-id='`+ type._id + `' style="color: red">Xóa <a>
+                                    <a href="javascript:value(0)" class="update-type-question" data-id='`+ type._id + `'>Sửa<a>
+                                    </div>
+                        <div class="timeline-badge-wrap d-flex flex-column align-items-center">
+                            <span class="timeline-badge border-2 border border-primary flex-shrink-0 my-8"></span>
+                            <span class="timeline-badge-border d-block flex-shrink-0"></span>
+                        </div>
+                        <div class="timeline-desc fs-3 text-dark mt-n1">` + type.descriptionType + `</div>
+                    </li>`
+                })
+                $(".l-all-type-question").html(html)
+                $(".sl-type-question").html(html_sl_type)
+                $(".sl-ud-type-question").html(html_sl_type)
+            }).then((rs) => {
+                $(".pre-loading").hide()
+            }).then((rs) => {
+                $(".delete-type-question").click(function () {
+                    let dataId = $(this).attr('data-id')
+                    Swal.fire({
+                        title: 'Bạn có muốn xóa loại câu hỏi này không?',
+                        showDenyButton: true,
+                        showCancelButton: true,
+                        confirmButtonText: 'Xóa',
+                        denyButtonText: `Không xóa`,
+                        cancelButtonText: 'Hủy',
+                    }).then((result) => {
+                        /* Read more about isConfirmed, isDenied below */
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: 'delete-type-questions/' + dataId + '',
+                                type: 'DELETE',
+                                dataType: "json",
+                                encode: true,
+                            }).done(function (data) {
+                                console.log(data)
+                                if (data == 'success') {
+                                    Swal.fire('Đã xóa!', '', 'success')
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Ôi không !...',
+                                        text: 'Có cái gì đó không ổn trong server!',
+                                        footer: '<a href="">Tại sao tôi lại gặp vấn đề này?</a>'
+                                    })
+                                }
+                            })
+                        } else if (result.isDenied) {
+                            Swal.fire('Những thay đổi không được lưu', '', 'info')
+                        }
+                    }).then((rs) => {
+                        getAllTypeQuestion()
+                    })
+
+                })
+            }).then((rs) => {
+                //request get detail  //request update
+                $(".update-type-question").click(function () {
+                    $(".alert-err").html("")
+
+                    let dataId = $(this).attr('data-id')
+                    $.ajax({
+                        url: 'get-type-questions/' + dataId + '',
+                        type: 'GET',
+                        dataType: "json",
+                        encode: true,
+                    }).done(function (data) {
+                        $(".ud-name-type").val(data.obj.nameType)
+                        $(".up-role-answer").val(data.obj.roleOfAnswer)
+                        $(".up-descript-answer").val(data.obj.descriptionType)
+                    })
+
+                    $(".pre-loading").show();
+                    $(".lo-update-type-question").slideDown()
+                    $(".btn-update-type-question").click(function () {
+
+                        $(".alert-err").html("")
+                        let udNameType = $(".ud-name-type").val()
+                        let upRole = $(".up-role-answer").val()
+                        let upDesType = $(".up-descript-answer").val()
+                        if (udNameType == "" || upRole == "") {
+                            $(".alert-err").html('Some thing was null !')
+                        } else {
+                            let formData = new FormData()
+                            formData = {
+                                _id: dataId,
+                                obj: {
+                                    nameType: udNameType,
+                                    descriptionType: upDesType,
+                                    roleOfAnswer: upRole
+                                }
+                            }
+                            //request update
+                            $.ajax({
+                                url: 'update-type-questions',
+                                type: 'PUT',
+                                dataType: "json",
+                                data: formData,
+                                encode: true,
+                            }).done(function (data) {
+                                if (data.data == "success") {
+                                    Swal.fire({
+                                        position: 'top-end',
+                                        icon: 'success',
+                                        title: 'Cập nhật thành công',
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    })
+                                    $(".pre-loading").hide();
+                                    $(".lo-update-type-question").slideUp()
+                                }
+                            }).then((rs) => {
+                                window.location.reload()
+                                $(".ud-name-type").val("")
+                                $(".up-role-answer").val("")
+                                $(".up-descript-answer").val("")
+                            })
+                        }
+                    })
+                })
+            })
+        }
+        //function close component in pre-layout
+        closeComponent()
+        function closeComponent() {
+            $(".pre-loading").click(function () {
+                $(this).hide()
+                $(".lo-update-type-question").slideUp()
+                $(".lo-update-question").slideUp()
+            })
+        }
+        //function add a type question 
+        addATypeQuestion()
+        function addATypeQuestion() {
+            $(".btn-add-type-question").click(function () {
+                $(".pre-loading").show()
+                let desAnswer = $(".descript-answer").val();
+                let roleAnswer = $(".role-answer").val();
+                let nameType = $(".name-type").val();
+                //validation
+                if (nameType == "" || roleAnswer == "") {
+                    $(".pre-loading").hide()
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Có cái gì đó rỗng!',
+                        footer: '<a href="">Tại sao tôi lại gặp vấn đề này?</a>'
+                    })
+                } else {
+                    let formData = new FormData();
+                    formData = {
+                        nameType: nameType,
+                        descriptionType: desAnswer,
+                        roleOfAnswer: roleAnswer
+                    }
+                    //request api
+                    $.ajax({
+                        url: 'add-new-type-questions',
+                        type: 'POST',
+                        dataType: "json",
+                        data: formData,
+                        encode: true,
+                    }).done(function (data) {
+                        if (data.data == "success") {
+                            Swal.fire({
+                                position: 'top-end',
+                                icon: 'success',
+                                title: 'Thêm thành công',
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Ôi không!...',
+                                text: 'Có cái gì đó không ổn trên server!',
+                                footer: '<a href="">Tại sao tôi lại gặp vấn đề này?</a>'
+                            })
+                        }
+
+                    }).then((rs) => {
+                        getAllTypeQuestion()
+                        $(".descript-answer").val("");
+                        $(".role-answer").val("");
+                        $(".name-type").val("");
+                    }).then((rs) => {
+                        window.scrollTo(0, 0);
+                    }).then((rs) => {
+                        $(".pre-loading").hide()
+                    })
+                }
+            })
+        }
+
+        //fuction add a question
+        addAQuestion()
+        function addAQuestion() {
+            $(".btn-add-question").click(function () {
+                $(".pre-loading").show()
+                let answer = $(".awswer").val()
+                let question = $(".content-question").val()
+                let typeQuestion = $(".sl-type-question").val()
+                //dont need to validation
+                let round = $(".sl-round").val()
+                let srcImage = $(".src-image").val()
+                let topic = $(".sl-topic").val()
+
+                if (answer == "" || question == "" || typeQuestion == "") {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Something went null!',
+                        footer: '<a href="">Why do I have this issue?</a>'
+                    })
+                    $(".pre-loading").hide()
+                } else {
+                    //hash string to array answer
+                    let rs = defineRoleQuestion(answer, typeQuestion)
+                    let l_answer = rs.trueAnwer
+                    let l_option = rs.listOption
+                    if (rs == "undefindTypeQuestion") {
+                        $(".pre-loading").hide()
+                        if (rs == "undefindTypeQuestion") {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Ôi không...',
+                                text: 'Loại câu hỏi này đã được định nghĩa ! ',
+                                footer: '<a href="">Tại sao tôi lại gặp vấn đề này?</a>'
+                            })
+                        }
+                    } else if (rs == "underfindAnwser") {
+                        $(".pre-loading").hide()
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Ôi không...',
+                            text: 'Câu trả lời đã được định nghĩa ! ',
+                            footer: '<a href="">Tại sao tôi lại gặp vấn đề này?</a>'
+                        })
+                    } else {
+                        let formData = new FormData()
+                        formData = {
+                            decription: question,
+                            imagePath: srcImage,
+                            answer: l_answer,
+                            st_option: l_option,
+                            idType: typeQuestion,
+                            idTopic: topic,
+                            idRound: round
+                        }
+                        $.ajax({
+                            url: 'add-new-question',
+                            type: 'POST',
+                            dataType: "json",
+                            data: formData,
+                            encode: true,
+                        }).done(function (data) {
+                            if (data.data == "success") {
+                                Swal.fire({
+                                    position: 'top-start',
+                                    icon: 'success',
+                                    title: 'Thêm thành công',
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                })
+
+                            }
+                        }).then((rs) => {
+                            getAllQuestion()
+                            $(".awswer").val("")
+                            $(".content-question").val("")
+                            $(".sl-type-question").val("")
+                            //dont need to validation
+                            $(".sl-round").val("")
+                            $(".src-image").val("")
+                            $(".sl-topic").val("")
+                        }).then((rs) => {
+                            window.scrollTo(0, 0);
+                            $(".pre-loading").hide()
+                        })
+                    }
+                    console.log(rs)
+                }
+            })
+        }
+        //define role in question
+        function defineRoleQuestion(str, type) {
+            let list_option = [];
+            let true_anwer = []
+            //trac nghiem
+            if (type == '652b6a7e38f6452e6a22e142') {
+                if (!str.split(",").length) {
+                    return false
+                } else {
+                    str.split(",").map((item) => {
+                        if (item.split("*").length == 2) {
+                            list_option.push(item.split("*")[1])
+                            true_anwer.push(item.split("*")[1])
+                        } else {
+                            list_option.push(item)
+                        }
+                    })
+                    if (list_option.length == 0 || true_anwer == 0) {
+                        return 'underfindAnwser'
+                    }
+                    return {
+                        listOption: list_option,
+                        trueAnwer: true_anwer
+                    }
+                }
+            } else {
+                return 'undefindTypeQuestion'
+            }
+        }
+    });
+</script>
+
+<style>
+    .pre-loading {
+        position: absolute;
+        z-index: 100000;
+        width: 100%;
+        height: 100%;
+        background-color: rgb(70, 70, 70, 0.5);
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .lds-roller {
+        display: inline-block;
+        position: relative;
+        width: 80px;
+        height: 80px;
+    }
+
+    .lds-roller div {
+        animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        transform-origin: 40px 40px;
+    }
+
+    .lds-roller div:after {
+        content: " ";
+        display: block;
+        position: absolute;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #fff;
+        margin: -4px 0 0 -4px;
+    }
+
+    .lds-roller div:nth-child(1) {
+        animation-delay: -0.036s;
+    }
+
+    .lds-roller div:nth-child(1):after {
+        top: 63px;
+        left: 63px;
+    }
+
+    .lds-roller div:nth-child(2) {
+        animation-delay: -0.072s;
+    }
+
+    .lds-roller div:nth-child(2):after {
+        top: 68px;
+        left: 56px;
+    }
+
+    .lds-roller div:nth-child(3) {
+        animation-delay: -0.108s;
+    }
+
+    .lds-roller div:nth-child(3):after {
+        top: 71px;
+        left: 48px;
+    }
+
+    .lds-roller div:nth-child(4) {
+        animation-delay: -0.144s;
+    }
+
+    .lds-roller div:nth-child(4):after {
+        top: 72px;
+        left: 40px;
+    }
+
+    .lds-roller div:nth-child(5) {
+        animation-delay: -0.18s;
+    }
+
+    .lds-roller div:nth-child(5):after {
+        top: 71px;
+        left: 32px;
+    }
+
+    .lds-roller div:nth-child(6) {
+        animation-delay: -0.216s;
+    }
+
+    .lds-roller div:nth-child(6):after {
+        top: 68px;
+        left: 24px;
+    }
+
+    .lds-roller div:nth-child(7) {
+        animation-delay: -0.252s;
+    }
+
+    .lds-roller div:nth-child(7):after {
+        top: 63px;
+        left: 17px;
+    }
+
+    .lds-roller div:nth-child(8) {
+        animation-delay: -0.288s;
+    }
+
+    .lds-roller div:nth-child(8):after {
+        top: 56px;
+        left: 12px;
+    }
+
+    @keyframes lds-roller {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+{{!-- pop up --}}
+<div class="pre-loading">
+    <div class="lds-roller">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+<div class="lo-update-type-question" style="position: absolute;  position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);width: 50%; height: 100%; z-index: 999999; display: none;">
+
+    <div class="card mb-0">
+        <div class="card-body">
+            <h5 class="card-title fw-semibold mb-4">Cập nhật loại câu hỏi</h5>
+
+            <form>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="formp-label">Tên thể loại<a style="color: red">*</a></label>
+                    <input type="text" class="form-control ud-name-type" id="" aria-describedby="">
+                    <div id="emailHelp" class="form-text">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Vai trò của câu trả lời<a style="color: red">*</a></label>
+                    <textarea type="text" class="form-control up-role-answer" id="" aria-describedby=""></textarea>
+                    <div id="emailHelp" class="form-text">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label ">Mô tả về câu trả lời<a
+                            style="color: red">*</a></label>
+                    <textarea type="text" class="form-control up-descript-answer" id="" aria-describedby=""></textarea>
+                    <div id="emailHelp" class="form-text">
+                    </div>
+                    <label for="exampleInputEmail1" class="form-label alert-err" style="color: red"></label>
+                </div>
+                <button type="button" class="btn btn-primary btn-update-type-question">Cập nhật</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="lo-update-question"
+    style="position: absolute;  position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);width: 70%; overflow-y: scroll; height: 100%; z-index: 999999; display: none;">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title fw-semibold mb-4">Cập nhật thông tin câu hỏi</h5>
+            <form>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Nội dung của câu hỏi<a
+                            style="color: red">*</a></label>
+                    <input type="text" class="form-control ud-content-question" id="" aria-describedby="">
+                    <div id="emailHelp" class="form-text">
+
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">Câu trả lời<a style="color: red">*</a></label>
+                    <a>Ví dụ:Loại câu hỏi của trắc nghiệm : </br>Chọn câu trả lời : 6,7,*8,9 </br> Câu trả lời đúng: 8 </a>
+
+                    <textarea class="form-control ud-awswer" id="exampleInputPassword1"
+                        style="height: 100px;"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="disabledSelect" class="form-label">Loại của câu hỏi này<a
+                            style="color: red">*</a></label>
+                    <select id="disabledSelect" class="form-select sl-ud-type-question">
+
+
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Đường dẫn hình ảnh</label>
+                    <input type="text" class="form-control ud-src-image" id="" aria-describedby="">
+                    <div id="emailHelp" class="form-text">
+
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="disabledSelect" class="form-label sl-ud-round">Vòng chơi</label>
+                    <select id="disabledSelect" class="form-select">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="disabledSelect" class="form-label sl-up-topic">Chủ đề</label>
+                    <select id="disabledSelect" class="form-select">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                    </select>
+                </div>
+                <p style="color: red;" class="alert-error-update-question"></p>
+
+                <button type="button" class="btn btn-primary btn-update-question">Cập nhật</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+
+
+{{!-- main html body --}}
+<div class="row">
+    <div class="col-lg-4 d-flex align-items-stretch">
+        <div class="card w-100">
+            <div class="card-body p-4">
+                <div class="mb-4">
+                    <h5 class="card-title fw-semibold">Loại câu hỏi</h5>
+                </div>
+                <ul class="timeline-widget mb-0 position-relative mb-n5 l-all-type-question">
+
+                </ul>
+            </div>
+        </div>
+    </div>
+    {{!-- table of all question --}}
+    <div class="col-lg-8 d-flex align-items-stretch">
+        <div class="card w-100">
+            <div class="card-body p-4">
+                <h5 class="card-title fw-semibold mb-4">Thông tin Câu hỏi</h5>
+                <div class="table-responsive">
+                    <table class="table text-nowrap mb-0 align-middle">
+                        <thead class="text-dark fs-4">
+                            <tr>
+
+                                <th class="border-bottom-0">
+                                    <h6 class="fw-semibold mb-0">Nội dung/Chủ đề</h6>
+                                </th>
+                                <th class="border-bottom-0">
+                                    <h6 class="fw-semibold mb-0">Loại/Vòng</h6>
+                                </th>
+                                <th class="border-bottom-0">
+                                    <h6 class="fw-semibold mb-0">Các lựa chọn</h6>
+                                </th>
+                                <th class="border-bottom-0">
+                                    <h6 class="fw-semibold mb-0">Câu trả lời</h6>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="body-question">
+                            {{!-- body of question --}}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{!-- form to add question --}}
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title fw-semibold mb-4">Thêm thông tin câu hỏi</h5>
+                <div class="card">
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-3">
+                                <label for="exampleInputEmail1" class="form-label">Nội dung của câu hỏi<a
+                                        style="color: red">*</a></label>
+                                <input type="text" class="form-control content-question" id="" aria-describedby="">
+                                <div id="emailHelp" class="form-text">
+
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="exampleInputPassword1" class="form-label">Câu trả lời<a
+                                        style="color: red">*</a></label>
+                                  <a>Ví dụ:Loại câu hỏi của trắc nghiệm : </br>Chọn câu trả lời : 6,7,*8,9 </br> Câu trả lời đúng: 8 </a>
+
+                                <textarea class="form-control awswer" id="exampleInputPassword1"
+                                    style="height: 100px;"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="disabledSelect" class="form-label">Loại của câu hỏi này<a
+                                        style="color: red">*</a></label>
+                                <select id="disabledSelect" class="form-select sl-type-question">
+
+
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="exampleInputEmail1" class="form-label">Đường dẫn hình ảnh</label>
+                                <input type="text" class="form-control src-image" id="" aria-describedby="">
+                                <div id="emailHelp" class="form-text">
+
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="disabledSelect" class="form-label sl-round">Vòng chơi</label>
+                                <select id="disabledSelect" class="form-select">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="disabledSelect" class="form-label sl-topic">Chủ để</label>
+                                <select id="disabledSelect" class="form-select">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                </select>
+                            </div>
+
+                            <button type="button" class="btn btn-primary btn-add-question">Submit</button>
+                        </form>
+                    </div>
+                </div>
+                <h5 class="card-title fw-semibold mb-4">Loại của câu hỏi</h5>
+                <div class="card mb-0">
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-3">
+                                <label for="exampleInputEmail1" class="formp-label">Tên thể loại<a
+                                        style="color: red">*</a></label>
+                                <input type="text" class="form-control name-type" id="" aria-describedby="">
+                                <div id="emailHelp" class="form-text">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="exampleInputEmail1" class="form-label">Vai trò của câu trả lời<a
+                                        style="color: red">*</a></label>
+                                <textarea type="text" class="form-control role-answer" id=""
+                                    aria-describedby=""></textarea>
+                                <div id="emailHelp" class="form-text">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="exampleInputEmail1" class="form-label ">Mô tả câu trả lời<a
+                                        style="color: red">*</a></label>
+                                <textarea type="text" class="form-control descript-answer" id=""
+                                    aria-describedby=""></textarea>
+                                <div id="emailHelp" class="form-text">
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-primary btn-add-type-question">Thêm</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
